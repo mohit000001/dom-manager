@@ -1,0 +1,38 @@
+{
+  "name": "dom-manager",
+  "version": "1.0.0",
+  "description": "\"Dom Manager to manage DOM\"",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare" : "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion" : "npm run lint",
+    "version" : "npm run format && git add -A src",
+    "postversion" : "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohit000001/dom-manager.git"
+  },
+  "keywords": ["dom manipulation", "dom mutation", "javascript framework", "javascript library", "dom library"],
+  "author": "Mohit Swami",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mohit000001/dom-manager/issues"
+  },
+  "homepage": "https://github.com/mohit000001/dom-manager#readme",
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7",
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.3",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^4.5.5"
+  }
+}
