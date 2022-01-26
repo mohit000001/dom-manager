@@ -1,1 +1,11 @@
-export const welcome = (name: string) => `Hello ${name}`;
+import { render } from "./Dom";
+import { createState } from "./State";
+
+export {
+    render,
+    createState
+}
+
+
+
+ 
