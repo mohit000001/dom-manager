@@ -1,17 +1,28 @@
 function render(element: any, node: HTMLElement) {
 
   if (typeof element === "string") {
-    node.innerHTML += element;
+    const textNode = document.createTextNode(element)
+    node.appendChild(textNode);
   }
   else if (typeof element.type === "function") {
 
-    const renderedEles = element.type(element.props);
-    render(renderedEles, node);
-
+    if(Boolean(element.type.prototype) && Boolean(element.type.prototype.isReactComponent)){
+        const newClsInstance = new element.type(element.props);
+        const renderedEles = newClsInstance.render();
+        render(renderedEles, node);
+    } // Class component
+    else {
+      const renderedEles = new element.type(element.props);
+      render(renderedEles, node);
+    } // functional component
   }
-  else if (typeof element != "string" && !element.type){
-    node.innerHTML += element.value;
-    element.AddAction(node, [{ type: "textChange" }])
+  else if (typeof element != "string" && "$$$state" in element ){
+
+    const childNodeIndex = node.childNodes.length;
+    element.AddAction(node, [{ type: "textChange", nodeIndex: childNodeIndex}])
+
+    const textNode = document.createTextNode(element.value);
+    node.appendChild(textNode);
   }
   else {
     const ele = document.createElement(element.type);
@@ -22,7 +33,7 @@ function render(element: any, node: HTMLElement) {
       setAttributes(Attrs, ele);
     }
     let childrens = element.props.children;
-
+  
     if (childrens && !Array.isArray(childrens)) {
       childrens = [childrens];
     }
@@ -40,7 +51,7 @@ function setAttributes(Attrs: any, ele: HTMLElement){
 
     if (propName !== 'children') {
 
-      if (typeof Attrs[propName] === "object") {
+      if (Attrs[propName] && typeof Attrs[propName] === "object" && "$$$state" in Attrs[propName]) {
         Attrs[propName].AddAction(ele, [{ type: "AttributeChange", name: propName }])
         ele.setAttribute(propName, Attrs[propName].value);
       }

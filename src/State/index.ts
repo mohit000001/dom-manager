@@ -45,7 +45,7 @@ class AppStateModal {
             for(let change of changes) {
                switch(change.type) {
 
-                  case "textChange" : this.TextChange(node, value)
+                  case "textChange" : this.TextChange(node, value, change.nodeIndex)
                   break;
 
                   case "htmlChange" : this.innerHtmlChange(node, value)
@@ -65,8 +65,13 @@ class AppStateModal {
         }
     } 
 
-    TextChange = (node: HTMLElement, value: string) => {
-        node.innerHTML = value;
+    TextChange = (node: HTMLElement, value: string, nodeIndex: number) => {
+        const textNode = document.createTextNode(value)
+        if(node.childNodes.length > 0) {
+            node.replaceChild(textNode, node.childNodes[nodeIndex]);
+            return;
+        }   
+        node.appendChild(textNode);
     }
     
     innerHtmlChange = (node: HTMLElement, value: string) => {
