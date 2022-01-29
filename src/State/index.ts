@@ -57,6 +57,10 @@ class AppStateModal {
                       }
                   }
                   break;
+                  
+                  case "ListChange": {
+                        this.ListChange(node, value);
+                  }
 
                   default : 
                   break;
@@ -81,7 +85,14 @@ class AppStateModal {
     AttributeChange = (node: HTMLElement, value: string, name: string) => {
         node.setAttribute(name, value);
     }
-
+    ListChange = (node: HTMLElement, value: any[]) => {
+    
+      node.innerHTML = "";
+      for(let i=0; i < value.length; i++){
+        const textNode = document.createTextNode(value[i]);
+        node.appendChild(textNode);
+      }
+    }
 }
 const AppStateInstance = new AppStateModal();
 
@@ -89,10 +100,14 @@ class state {
     value:any;
     ChangeId: number | string;
     $$$state: string;
+    mapFun: any[];
+    LMe:any;
     constructor(value:any){
         this.value = value;
         this.$$$state = "dom-manager-state-object";
         this.ChangeId = AppStateInstance.AddChangesStack();
+        this.mapFun = []
+        this.LMe = this;
     }
     AddAction = (node: HTMLElement, actions: change[]) => {
 
@@ -105,6 +120,14 @@ class state {
         }
         this.value = newValue;
         AppStateInstance.ExecuteUpdates(this.ChangeId, this.value);
+     }
+     Map = (fun : any) => {
+         const items = this.value.map(fun);
+         return {
+             $$$MAPEles: true,
+             stateInstance: this.LMe,
+             items
+         }
      }
 
 }

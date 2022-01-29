@@ -2,7 +2,7 @@ interface change {
     type: string,
     name ? : string,
     value: string,
-    nodeIndex: number
+    nodeIndex: number,
  }
  interface Action {
      node: HTMLElement,

@@ -12,7 +12,7 @@ function render(element: any, node: HTMLElement) {
         render(renderedEles, node);
     } // Class component
     else {
-      const renderedEles = new element.type(element.props);
+      const renderedEles = element.type(element.props);
       render(renderedEles, node);
     } // functional component
   }
@@ -24,6 +24,15 @@ function render(element: any, node: HTMLElement) {
     const textNode = document.createTextNode(element.value);
     node.appendChild(textNode);
   }
+  else if (typeof element != "string" && "$$$MAPEles" in element) {
+    const newEle = document.createElement('div');
+    node.appendChild(newEle);
+    node = newEle;
+    element.stateInstance.AddAction(node, [{type: "ListChange"}]);
+    for(let ele of element.items) {
+      render(ele, node);
+    }
+  }
   else {
     const ele = document.createElement(element.type);
     node.appendChild(ele);
@@ -32,7 +41,7 @@ function render(element: any, node: HTMLElement) {
     if(Attrs) {
       setAttributes(Attrs, ele);
     }
-    let childrens = element.props.children;
+    let childrens = element.props && element.props.children && element.props.children;
   
     if (childrens && !Array.isArray(childrens)) {
       childrens = [childrens];
