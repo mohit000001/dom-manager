@@ -1,5 +1,5 @@
 import { stackChange, change } from "../Types";
-
+import { render } from "..";
 class AppStateModal {
 
     changesStack : stackChange [];
@@ -33,7 +33,7 @@ class AppStateModal {
         return this.Ids.length;
     }
 
-    ExecuteUpdates = (Id: number | string, value: any) => {
+    ExecuteUpdates = (Id: number | string, value: any, mapFuns: any[]) => {
 
         const Index = this.changesStack.findIndex( change => change.id === Id);
         const actions = this.changesStack[Index].actions;
@@ -59,7 +59,7 @@ class AppStateModal {
                   break;
                   
                   case "ListChange": {
-                        this.ListChange(node, value);
+                        this.ListChange(node, value, mapFuns[change.mapFunId]);
                   }
 
                   default : 
@@ -85,13 +85,10 @@ class AppStateModal {
     AttributeChange = (node: HTMLElement, value: string, name: string) => {
         node.setAttribute(name, value);
     }
-    ListChange = (node: HTMLElement, value: any[]) => {
-    
+    ListChange = (node: HTMLElement, value: any[], mapFun: any) => {
       node.innerHTML = "";
-      for(let i=0; i < value.length; i++){
-        const textNode = document.createTextNode(value[i]);
-        node.appendChild(textNode);
-      }
+      const elements = value.map(mapFun);
+      render(elements, node);
     }
 }
 const AppStateInstance = new AppStateModal();
@@ -102,31 +99,37 @@ class state {
     $$$state: string;
     mapFun: any[];
     LMe:any;
+    mapFunCount: number;
     constructor(value:any){
         this.value = value;
         this.$$$state = "dom-manager-state-object";
         this.ChangeId = AppStateInstance.AddChangesStack();
         this.mapFun = []
         this.LMe = this;
+        this.mapFunCount = 0;
     }
     AddAction = (node: HTMLElement, actions: change[]) => {
-
         AppStateInstance.AddAction( node, this.ChangeId, actions);
     }
-
     setState = (newValue: any) => {
         if(this.value == newValue) {
             return;
         }
+        if(Array.isArray(this.value) && [...this.value] === newValue){
+            return;
+        } // Not working Have to find solution.
         this.value = newValue;
-        AppStateInstance.ExecuteUpdates(this.ChangeId, this.value);
+        AppStateInstance.ExecuteUpdates(this.ChangeId, this.value, this.mapFun);
      }
      Map = (fun : any) => {
+         this.mapFun[this.mapFunCount] = fun;
+         this.mapFunCount++;
          const items = this.value.map(fun);
          return {
              $$$MAPEles: true,
              stateInstance: this.LMe,
-             items
+             items,
+             mapFunId: this.mapFunCount - 1,
          }
      }
 

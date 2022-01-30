@@ -3,6 +3,7 @@ interface change {
     name ? : string,
     value: string,
     nodeIndex: number,
+    mapFunId: number,
  }
  interface Action {
      node: HTMLElement,

@@ -28,8 +28,13 @@ function render(element: any, node: HTMLElement) {
     const newEle = document.createElement('div');
     node.appendChild(newEle);
     node = newEle;
-    element.stateInstance.AddAction(node, [{type: "ListChange"}]);
+    element.stateInstance.AddAction(node, [{type: "ListChange", mapFunId: element.mapFunId}]);
     for(let ele of element.items) {
+      render(ele, node);
+    }
+  }
+  else if(typeof element != "string" && Array.isArray(element)){
+    for(let ele of element){
       render(ele, node);
     }
   }
